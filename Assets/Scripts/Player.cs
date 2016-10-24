@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using UnityEngine.SceneManagement; // 유니티 5.3부터는 Application 말고 SceneManager를 사용하도록 권고
+using UnityEngine.UI; // UI를 위하여 
 
 // Player inherits from MovingObjects, our base class for objects that can move,
 // Enemy also inherits from this.
@@ -12,15 +13,20 @@ public class Player : MovingObject
     public int pointsPerFood = 10;
     public int pointsPerSoda = 20;
     public float restartLevelDelay = 1f; // Delay time to restart level.
+    public Text foodText; // ** 
 
     private Animator animator;
     private int food;
 
     // Use this for initialization
+    /*
+     * 수정됨
+     */ 
     protected override void Start()
     {
         animator = GetComponent<Animator>();
         food = GameManager.instance.playerFoodPoints;
+        foodText.text = "Food: " + food; // **
         base.Start(); // initialize by using MovingObject
     }
 
@@ -57,9 +63,13 @@ public class Player : MovingObject
         GameManager.instance.playerFoodPoints = food;
     }
 
+    /*
+     * 수정됨
+     */ 
     protected override void AttemptMove<T>(int xDir, int yDir)
     {
         food--;
+        foodText.text = "Food: " + food; // **
         base.AttemptMove<T>(xDir, yDir);
 
         RaycastHit2D hit;
@@ -68,6 +78,9 @@ public class Player : MovingObject
         GameManager.instance.playersTurn = false; // 이 시기에 Update에서 playersTurn을 확인
     }
 
+    /*
+     * 수정됨
+     */ 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Exit")
@@ -81,11 +94,13 @@ public class Player : MovingObject
         else if (other.tag == "Food")
         {
             food += pointsPerFood;
+            foodText.text = "+" + pointsPerFood + " Food: " + food; // **
             other.gameObject.SetActive(false);
         }
         else if (other.tag == "Soda")
         {
             food += pointsPerSoda;
+            foodText.text = "+" + pointsPerSoda + " Food: " + food; // **
             other.gameObject.SetActive(false);
         }
     }
@@ -105,10 +120,14 @@ public class Player : MovingObject
         //Application.LoadLevel(Application.loadedLevel);
     }
 
+    /*
+     * 수정됨
+     */ 
     public void LoseFood(int loss)
     {
         animator.SetTrigger("playerHit");
         food -= loss;
+        foodText.text = "-" + loss + " Food: " + food;
         CheckIfGameOver();
     }
 
