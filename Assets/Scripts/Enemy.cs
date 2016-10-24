@@ -13,6 +13,8 @@ public class Enemy : MovingObject {
     // Use this for initialization
     protected override void Start ()
     {
+        // 이런 방법으로 적을 추가함으로써, 게임매니저가 public function을 호출할 수 있다. 
+        GameManager.instance.AddEnemyToList(this); // ** 추가된 부분
         animator = GetComponent<Animator>();
         target = GameObject.FindGameObjectWithTag("Player").transform;
         base.Start();
@@ -34,7 +36,7 @@ public class Enemy : MovingObject {
     }
 	
     // MoveEnemy is called by the GameManager each turn to tell each Enemy to try to move towards the player.
-    public void MoneyEnemy()
+    public void MoveEnemy()
     {
         int xDir = 0;
         int yDir = 0;
@@ -62,9 +64,8 @@ public class Enemy : MovingObject {
 
         // Call the LoseFood function of hitPlayer passing it playerDamage
         hitPlayer.LoseFood(playerDamage);
-        animator.SetTrigger("enemyAttack"); // Set the attack trigger of animator to trigger Enemy attack animation
-
-        throw new NotImplementedException();
+        // Set the attack trigger of animator to trigger Enemy attack animation
+        animator.SetTrigger("enemyAttack"); // ** 추가된 부분
     }
 
 }

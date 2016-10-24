@@ -1,25 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.SceneManagement; // 유니티 5.3부터는 Application 말고 SceneManager를 사용하도록 권고
 
 // Player inherits from MovingObjects, our base class for objects that can move,
 // Enemy also inherits from this.
 
-public class Player : MovingObject {
+public class Player : MovingObject
+{
     public int wallDamage = 1; // damage when player chop to wall
-    public int pointsPerFood = 10; 
+    public int pointsPerFood = 10;
     public int pointsPerSoda = 20;
     public float restartLevelDelay = 1f; // Delay time to restart level.
 
     private Animator animator;
     private int food;
-    
-	// Use this for initialization
-	protected override void Start () {
+
+    // Use this for initialization
+    protected override void Start()
+    {
         animator = GetComponent<Animator>();
         food = GameManager.instance.playerFoodPoints;
         base.Start(); // initialize by using MovingObject
-	}
+    }
 
     // Update is called once per frame
     void Update()
@@ -65,9 +68,9 @@ public class Player : MovingObject {
         GameManager.instance.playersTurn = false; // 이 시기에 Update에서 playersTurn을 확인
     }
 
-    private void OnTriggerEnter2D (Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.tag == "Exit")
+        if (other.tag == "Exit")
         {
             //Invoke the Restart function to start the next level with a delay of restartLevelDelay (default 1 second).
             Invoke("Restart", restartLevelDelay);
@@ -75,12 +78,12 @@ public class Player : MovingObject {
             // disable the player object since level is over.
             enabled = false;
         }
-        else if(other.tag == "Food")
+        else if (other.tag == "Food")
         {
             food += pointsPerFood;
             other.gameObject.SetActive(false);
         }
-        else if(other.tag == "Soda")
+        else if (other.tag == "Soda")
         {
             food += pointsPerSoda;
             other.gameObject.SetActive(false);
@@ -93,14 +96,13 @@ public class Player : MovingObject {
 
         hitWall.DamageWall(wallDamage);
         animator.SetTrigger("playerChop");
-
-        throw new NotImplementedException();
     }
 
     // If player reached the exit, set a new level 
     private void Restart()
     {
-        Application.LoadLevel(Application.loadedLevel);
+        SceneManager.LoadScene(0);
+        //Application.LoadLevel(Application.loadedLevel);
     }
 
     public void LoseFood(int loss)
@@ -112,7 +114,7 @@ public class Player : MovingObject {
 
     private void CheckIfGameOver()
     {
-        if(food <= 0)
+        if (food <= 0)
         {
             GameManager.instance.GameOver();
         }
