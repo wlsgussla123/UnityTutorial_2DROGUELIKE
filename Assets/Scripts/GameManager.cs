@@ -5,6 +5,8 @@ public class GameManager : MonoBehaviour {
     public static GameManager instance = null; // 다른 클래스가 접근할 수 있또록 public.
 
     public BoardManager boardScript;
+    public int playerFoodPoints = 100;
+    [HideInInspector] public bool playersTurn = true;
 
     private int level = 3;
 
@@ -25,6 +27,11 @@ public class GameManager : MonoBehaviour {
     void InitGame()
     {
         boardScript.SetupScene(level); // boardScript를 참조하여 SetUpScene 함수를 호출하여 적의 개수를 정할 수 있음.
+    }
+
+    public void GameOver()
+    {
+        enabled = false;
     }
 	
 	// Update is called once per frame
