@@ -13,20 +13,24 @@ public class Player : MovingObject
     public int pointsPerFood = 10;
     public int pointsPerSoda = 20;
     public float restartLevelDelay = 1f; // Delay time to restart level.
-    public Text foodText; // ** 
+    public Text foodText;
+    public AudioClip moveSound1; // ** gameOverSound까지
+    public AudioClip moveSound2;
+    public AudioClip eatSound1;
+    public AudioClip eatSound2;
+    public AudioClip drinkSound1;
+    public AudioClip drinkSound2;
+    public AudioClip gameOverSound; // **
 
     private Animator animator;
     private int food;
 
     // Use this for initialization
-    /*
-     * 수정됨
-     */ 
     protected override void Start()
     {
         animator = GetComponent<Animator>();
         food = GameManager.instance.playerFoodPoints;
-        foodText.text = "Food: " + food; // **
+        foodText.text = "Food: " + food; 
         base.Start(); // initialize by using MovingObject
     }
 
@@ -73,6 +77,11 @@ public class Player : MovingObject
         base.AttemptMove<T>(xDir, yDir);
 
         RaycastHit2D hit;
+        // ** true를 반환한다면 이동이 가능하다는 뜻이므로
+        if(Move (xDir, yDir, out hit))
+        {
+            SoundManager.instance.RandomizeSfx(moveSound1, moveSound2);
+        }
 
         CheckIfGameOver();
         GameManager.instance.playersTurn = false; // 이 시기에 Update에서 playersTurn을 확인
@@ -94,13 +103,15 @@ public class Player : MovingObject
         else if (other.tag == "Food")
         {
             food += pointsPerFood;
-            foodText.text = "+" + pointsPerFood + " Food: " + food; // **
+            foodText.text = "+" + pointsPerFood + " Food: " + food;
+            SoundManager.instance.RandomizeSfx(eatSound1, eatSound2); // ** setting random eat sound
             other.gameObject.SetActive(false);
         }
         else if (other.tag == "Soda")
         {
             food += pointsPerSoda;
-            foodText.text = "+" + pointsPerSoda + " Food: " + food; // **
+            foodText.text = "+" + pointsPerSoda + " Food: " + food;
+            SoundManager.instance.RandomizeSfx(drinkSound1, drinkSound2); // ** setting random drink sound
             other.gameObject.SetActive(false);
         }
     }
@@ -131,10 +142,15 @@ public class Player : MovingObject
         CheckIfGameOver();
     }
 
+    /*
+     *  수정됨 
+     */
     private void CheckIfGameOver()
     {
         if (food <= 0)
         {
+            SoundManager.instance.PlaySingle(gameOverSound); //** start game oversound
+            SoundManager.instance.musicSource.Stop(); // ** stop background music
             GameManager.instance.GameOver();
         }
     }

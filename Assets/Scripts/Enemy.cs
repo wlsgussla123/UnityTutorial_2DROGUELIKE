@@ -6,15 +6,18 @@ using System;
 public class Enemy : MovingObject {
     public int playerDamage; // the food points that are going to be substracted 
                              // when the enemy attacks the player.
+    public AudioClip enemyAttack1; // **
+    public AudioClip enemyAttack2; // ** 
+
     private Animator animator;
     private Transform target; 
     private bool skipMove;  //Boolean to determine whether or not enemy should skip a turn or move this turn.
-
+    
     // Use this for initialization
     protected override void Start ()
     {
         // 이런 방법으로 적을 추가함으로써, 게임매니저가 public function을 호출할 수 있다. 
-        GameManager.instance.AddEnemyToList(this); // ** 추가된 부분
+        GameManager.instance.AddEnemyToList(this); 
         animator = GetComponent<Animator>();
         target = GameObject.FindGameObjectWithTag("Player").transform;
         base.Start();
@@ -65,7 +68,9 @@ public class Enemy : MovingObject {
         // Call the LoseFood function of hitPlayer passing it playerDamage
         hitPlayer.LoseFood(playerDamage);
         // Set the attack trigger of animator to trigger Enemy attack animation
-        animator.SetTrigger("enemyAttack"); // ** 추가된 부분
+        animator.SetTrigger("enemyAttack"); 
+
+        SoundManager.instance.RandomizeSfx(enemyAttack1, enemyAttack2); // ** 랜덤으로 실행
     }
 
 }
